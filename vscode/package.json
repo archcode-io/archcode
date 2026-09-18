@@ -1,0 +1,19 @@
+{
+  "name": "archcode",
+  "displayName": "ArchCode",
+  "description": "Syntax colouring for ArchCode (.arch) — an open notation for software architecture.",
+  "version": "0.2.0",
+  "publisher": "archcode-io",
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "https://github.com/archcode-io/archcode.git", "directory": "vscode" },
+  "homepage": "https://archcode.io",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages"],
+  "keywords": ["archcode", "architecture", "c4", "diagram"],
+  "contributes": {
+    "languages": [{ "id": "archcode", "aliases": ["ArchCode", "archcode"], "extensions": [".arch"], "configuration": "./language-configuration.json" }],
+    "grammars": [{ "language": "archcode", "scopeName": "source.archcode", "path": "./syntaxes/archcode.tmLanguage.json" }]
+  },
+  "scripts": { "build": "node build.mjs" },
+  "devDependencies": { "@archcode-io/engine": "file:../engine" }
+}

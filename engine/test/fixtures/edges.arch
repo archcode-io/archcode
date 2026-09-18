@@ -1,0 +1,9 @@
+   # leading comment with trailing spaces   
+	service	tabbed	"Tabs and tabs"	tech	Go
+
+# a comment-only line
+
+service  spaced   "Много    пробелов"    tags  core ,  sales , billing
+spaced calls tabbed over HTTPS via cdn, waf, gw "долгий путь"
+
+service unclosed "no newline at end" tech Rust

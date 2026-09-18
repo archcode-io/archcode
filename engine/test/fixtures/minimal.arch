@@ -1,0 +1,4 @@
+service   checkout   "Checkout"      tech Go
+datastore orders_db  "Orders DB"     tech PostgreSQL 16
+
+checkout writes orders_db over SQL

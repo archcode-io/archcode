@@ -1,0 +1,138 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ArchCode",
+  "scopeName": "source.archcode",
+  "fileTypes": [
+    "arch"
+  ],
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#pragma"
+    },
+    {
+      "include": "#declaration"
+    },
+    {
+      "include": "#interface"
+    },
+    {
+      "include": "#relation"
+    },
+    {
+      "include": "#run"
+    },
+    {
+      "include": "#attribute"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#braces"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "match": "#.*$",
+      "name": "comment.line.number-sign.archcode"
+    },
+    "pragma": {
+      "match": "^\\s*(archcode)\\s+(\\S+)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.directive.archcode"
+        },
+        "2": {
+          "name": "constant.numeric.version.archcode"
+        }
+      }
+    },
+    "declaration": {
+      "match": "(?:^|(?<=\\{))\\s*(datastore|component|external|function|contract|decision|service|gateway|cluster|managed|segment|profile|system|webapp|broker|actor|cache|topic|board|arch|node|rule|view|app|job|env|cluster|managed|segment|node|env|view|decision|profile|board|rule)\\s+([A-Za-z_][\\w.\\-]*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.kind.archcode"
+        },
+        "2": {
+          "name": "entity.name.type.object.archcode"
+        }
+      }
+    },
+    "interface": {
+      "match": "(?:^|\\s)(?:([A-Za-z_][\\w.\\-]*)\\s+)?(exposes|stores)\\s+([a-z][\\w-]*)(?:\\s+([a-z][\\w+.-]*://\\S+))?(?:\\s+(@\\S+))?",
+      "captures": {
+        "1": {
+          "name": "variable.other.object.archcode"
+        },
+        "2": {
+          "name": "keyword.operator.interface.archcode"
+        },
+        "3": {
+          "name": "support.type.interface-kind.archcode"
+        },
+        "4": {
+          "name": "string.unquoted.pointer.archcode"
+        },
+        "5": {
+          "name": "constant.other.revision.archcode"
+        }
+      }
+    },
+    "relation": {
+      "match": "(?:^|\\s)(?:([A-Za-z_][\\w.\\-]*)\\s+)?(subscribes|depends_on|publishes|streams|listens|writes|calls|reads|emits|uses)\\s+([A-Za-z_][\\w.\\-]*)",
+      "captures": {
+        "1": {
+          "name": "variable.other.object.archcode"
+        },
+        "2": {
+          "name": "keyword.operator.verb.archcode"
+        },
+        "3": {
+          "name": "variable.other.object.archcode"
+        }
+      }
+    },
+    "run": {
+      "match": "(?:^|(?<=\\{))\\s*(run)\\s+([A-Za-z_][\\w.\\-]*(?:\\s*,\\s*[A-Za-z_][\\w.\\-]*)*)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.run.archcode"
+        },
+        "2": {
+          "name": "variable.other.object.archcode"
+        }
+      }
+    },
+    "attribute": {
+      "patterns": [
+        {
+          "match": "(?<![\\w-])(availability|criticality|description|subscriber|retention|ratelimit|publisher|capacity|replicas|manifest|owned_by|transit|domain|backup|region|owner|stage|phase|scope|count|nodes|agent|tech|tags|repo|code|disk|host|vlan|data|role|auth|pii|rto|rpo|cpu|mem|gpu|via|ip|os|dc|over|via|port|spec|as|at)(?![\\w-])",
+          "name": "entity.other.attribute-name.archcode"
+        },
+        {
+          "match": "(?<![\\w-])x-[\\w-]+",
+          "name": "entity.other.attribute-name.custom.archcode"
+        },
+        {
+          "match": "(?<![\\w.-])[+]?\\d[\\w.%/]*",
+          "name": "constant.numeric.archcode"
+        },
+        {
+          "match": "@[\\w-]+",
+          "name": "constant.other.owner.archcode"
+        }
+      ]
+    },
+    "string": {
+      "match": "\"(?:[^\"\\\\]|\\\\.)*\"",
+      "name": "string.quoted.double.archcode"
+    },
+    "braces": {
+      "match": "[{}]",
+      "name": "punctuation.section.block.archcode"
+    }
+  }
+}

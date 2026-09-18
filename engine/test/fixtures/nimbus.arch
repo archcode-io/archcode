@@ -1,0 +1,50 @@
+# Corporate sales channel of a fictional insurer — C2, for the renderer smoke test
+arch nimbus "Nimbus — corporate sales channel" {
+
+  actor sales   "Sales"
+  actor support "Support"
+  actor svc     "Account managers"
+
+  gateway gw "API Gateway" { transit  tech "Kong" }
+
+  system erm "Corporate sales" {
+    webapp   erm_ui        "Sales workplace"   tech "React"
+    service  contracts_api "Contracts API"     tech "Java"
+    service  iam           "Internal IAM"      tech "Keycloak"
+    service  notifier      "Email notifier"    tech "Java"
+    service  extractor     "Document extractor" tech "Python"
+    datastore contracts_db "Contracts DB"      tech "PostgreSQL"  owned_by contracts_api
+    datastore iam_db       "IAM DB"            tech "PostgreSQL"  owned_by iam
+    datastore s3           "Object store"      tech "MinIO"       owned_by contracts_api
+    broker    mq           "Message broker"    { transit  tech "RabbitMQ" }
+  }
+
+  external corp_idp  "Corporate IdP"
+  external mail      "Mail server"
+  external llm       "LLM server"
+
+  # people come in through the perimeter
+  sales   calls erm_ui over HTTPS via gw
+  support calls erm_ui over HTTPS via gw
+  svc     calls erm_ui over HTTPS via gw
+
+  erm_ui calls contracts_api over "HTTP REST" "CRUD"
+  erm_ui calls iam over OIDC
+
+  contracts_api writes contracts_db over SQL
+  contracts_api writes s3 over "S3 API"
+  contracts_api publishes doc.added
+  iam writes iam_db over SQL
+  iam calls corp_idp over OIDC
+
+  topic doc.added {
+    via mq
+    publisher contracts_api
+    subscriber notifier
+    subscriber extractor
+  }
+
+  notifier  calls mail over SMTP
+  extractor calls llm over "HTTP API"
+  extractor reads s3 over "S3 API"
+}

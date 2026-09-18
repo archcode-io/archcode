@@ -1,0 +1,17 @@
+{
+  "name": "archcode",
+  "version": "0.2.0-preview.0",
+  "description": "ArchCode command line: render an .arch file to SVG, check it, build the compiled form.",
+  "license": "Apache-2.0",
+  "author": "Baryshev Labs",
+  "homepage": "https://archcode.io",
+  "repository": { "type": "git", "url": "https://github.com/archcode-io/archcode.git", "directory": "cli" },
+  "keywords": ["architecture", "c4", "diagram", "archcode", "cli"],
+  "type": "module",
+  "bin": { "archcode": "bin/archcode.mjs" },
+  "files": ["bin", "README.md", "LICENSE"],
+  "scripts": { "test": "node --test \"test/**/*.test.mjs\"" },
+  "dependencies": { "@archcode-io/engine": "file:../engine" },
+  "engines": { "node": ">=20" },
+  "publishConfig": { "access": "public" }
+}

@@ -1,0 +1,51 @@
+# Nimbus Retail — витрина и заказы
+arch shop "Nimbus Retail" {
+
+  actor  customer "Покупатель"
+  actor  support  "Оператор поддержки"
+
+  webapp storefront "Витрина" tech "React 19" {
+    calls orders over HTTPS via gw       # через периметр
+  }
+
+  service orders "Orders" {
+    tech "Kotlin 2.0"
+    owner @team-sales
+    criticality high
+    writes orders_db over SQL
+    publishes order.placed
+    exposes http openapi://orders.yaml@a1b2c3d
+  }
+
+  datastore orders_db "Orders DB" {
+    tech "PostgreSQL 16"
+    owned_by orders
+    pii true
+    retention 400d
+  }
+
+  gateway gw "API Gateway" {
+    transit
+    tech "Kong 3.6"
+    auth oidc
+    ratelimit 100rps
+  }
+
+  broker rabbit "RabbitMQ 3.13" {
+    transit
+    owner @platform
+  }
+
+  topic order.placed {
+    via rabbit
+    publisher orders
+    subscriber email_notifier
+  }
+
+  service email_notifier "Email Notifier" tech Java {
+    subscribes order.placed
+    calls exchange over SMTP
+  }
+
+  external exchange "MS Exchange"
+}
