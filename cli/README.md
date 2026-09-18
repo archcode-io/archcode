@@ -4,7 +4,7 @@ The [ArchCode](https://archcode.io) command line — render an `.arch` file to S
 build the compiled form.
 
 ```sh
-npm i -g archcode
+npm i -g archcode@preview
 
 archcode render archcode.arch -o architecture.svg          # dark; --theme light for a page
 archcode render archcode.arch --lens infrastructure --kind deployment -o deploy.svg

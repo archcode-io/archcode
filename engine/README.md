@@ -57,7 +57,7 @@ The engine has no opinion about where ELK runs. In Node it loads the bundled ELK
 use; a browser host calls `useElkWorker('/elk-worker.js')` once and every layout after that
 runs in a Web Worker.
 
-Not on npm yet — the first published version will be `0.2.0-preview.x`.
+On npm as a preview: `npm install @archcode-io/engine@preview` (prereleases sit under the `preview` tag, not `latest`).
 
 ## Layout of the repository
 

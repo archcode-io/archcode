@@ -7,7 +7,7 @@
   "homepage": "https://archcode.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/archcode-io/archcode.git"
+    "url": "git+https://github.com/archcode-io/archcode.git"
   },
   "bugs": {
     "url": "https://github.com/archcode-io/archcode/issues"

@@ -5,13 +5,37 @@
   "license": "Apache-2.0",
   "author": "Baryshev Labs",
   "homepage": "https://archcode.io",
-  "repository": { "type": "git", "url": "https://github.com/archcode-io/archcode.git", "directory": "cli" },
-  "keywords": ["architecture", "c4", "diagram", "archcode", "cli"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/archcode-io/archcode.git",
+    "directory": "cli"
+  },
+  "keywords": [
+    "architecture",
+    "c4",
+    "diagram",
+    "archcode",
+    "cli"
+  ],
   "type": "module",
-  "bin": { "archcode": "bin/archcode.mjs" },
-  "files": ["bin", "README.md", "LICENSE"],
-  "scripts": { "test": "node --test \"test/**/*.test.mjs\"" },
-  "dependencies": { "@archcode-io/engine": "file:../engine" },
-  "engines": { "node": ">=20" },
-  "publishConfig": { "access": "public" }
+  "bin": {
+    "archcode": "bin/archcode.mjs"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\""
+  },
+  "dependencies": {
+    "@archcode-io/engine": "file:../engine"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
