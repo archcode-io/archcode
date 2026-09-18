@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse, lower, applyLens, layout, layoutLayered } from '../src/index.js';
 
-const DIR = process.env.EXAMPLES ?? new URL('../../../spec/examples/', import.meta.url).pathname;
+const DIR = process.env.EXAMPLES ?? new URL('../../../../archcode-spec/examples/', import.meta.url).pathname;
 const examples = existsSync(DIR) ? readdirSync(DIR).filter(f => f.endsWith('.arch')).sort() : [];
 
 const inside = (p: { x: number; y: number }, n: { x: number; y: number; w: number; h: number }, eps = 3) =>

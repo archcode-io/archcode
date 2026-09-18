@@ -19,7 +19,7 @@ import { textWidth, nodeBox } from '../dist/src/layout/measure.js';
 import { STRATEGIES } from './strategies.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const EXAMPLES = process.env.EXAMPLES ?? join(here, '..', '..', 'spec', 'examples');
+const EXAMPLES = process.env.EXAMPLES ?? join(here, '..', '..', '..', 'archcode-spec', 'examples');
 
 // ------------------------------------------------------------------ args
 const args = process.argv.slice(2);
