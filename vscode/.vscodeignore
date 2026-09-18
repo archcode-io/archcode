@@ -1,0 +1,7 @@
+node_modules/**
+src/**
+build.mjs
+bundle.mjs
+package-lock.json
+.gitignore
+*.vsix

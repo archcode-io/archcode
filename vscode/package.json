@@ -1,19 +1,89 @@
 {
   "name": "archcode",
   "displayName": "ArchCode",
-  "description": "Syntax colouring for ArchCode (.arch) — an open notation for software architecture.",
-  "version": "0.2.0",
+  "description": "ArchCode (.arch): syntax colouring, diagnostics in the Problems panel, and a live preview beside the file.",
+  "version": "0.2.1",
   "publisher": "archcode-io",
   "license": "Apache-2.0",
-  "repository": { "type": "git", "url": "https://github.com/archcode-io/archcode.git", "directory": "vscode" },
-  "homepage": "https://archcode.io",
-  "engines": { "vscode": "^1.85.0" },
-  "categories": ["Programming Languages"],
-  "keywords": ["archcode", "architecture", "c4", "diagram"],
-  "contributes": {
-    "languages": [{ "id": "archcode", "aliases": ["ArchCode", "archcode"], "extensions": [".arch"], "configuration": "./language-configuration.json" }],
-    "grammars": [{ "language": "archcode", "scopeName": "source.archcode", "path": "./syntaxes/archcode.tmLanguage.json" }]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/archcode-io/archcode.git",
+    "directory": "vscode"
   },
-  "scripts": { "build": "node build.mjs" },
-  "devDependencies": { "@archcode-io/engine": "file:../engine" }
+  "homepage": "https://archcode.io",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "archcode",
+    "architecture",
+    "c4",
+    "diagram"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "archcode",
+        "aliases": [
+          "ArchCode",
+          "archcode"
+        ],
+        "extensions": [
+          ".arch"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "archcode",
+        "scopeName": "source.archcode",
+        "path": "./syntaxes/archcode.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "archcode.preview",
+        "title": "ArchCode: Open Preview to the Side",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "archcode.preview",
+          "when": "resourceExtname == .arch",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "archcode.preview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == archcode"
+      }
+    ]
+  },
+  "scripts": {
+    "grammar": "node build.mjs",
+    "bundle": "node bundle.mjs",
+    "build": "npm run grammar && npm run bundle",
+    "package": "npm run build && vsce package --no-dependencies",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@archcode-io/engine": "file:../engine",
+    "esbuild": "^0.28.2",
+    "@vscode/vsce": "^3.0.0"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:archcode"
+  ]
 }
