@@ -2,7 +2,7 @@
   "name": "archcode",
   "displayName": "ArchCode",
   "description": "ArchCode (.arch): syntax colouring, diagnostics in the Problems panel, and a live preview beside the file.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "archcode-io",
   "license": "Apache-2.0",
   "repository": {
@@ -11,6 +11,8 @@
     "directory": "vscode"
   },
   "homepage": "https://archcode.io",
+  "icon": "icon.png",
+  "galleryBanner": { "color": "#0A0F16", "theme": "dark" },
   "engines": {
     "vscode": "^1.85.0"
   },
