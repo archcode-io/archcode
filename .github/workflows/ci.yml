@@ -38,8 +38,12 @@ jobs:
         with:
           node-version: 22
       - run: npm ci --prefix ../engine && npm run build --prefix ../engine
-      - run: npm install
+      # the CLI names the published engine, as its users get it; here the engine from this
+      # commit is linked in its place, so a change to both is tested together
+      - run: mkdir -p node_modules/@archcode-io && ln -sfn ../../../engine node_modules/@archcode-io/engine
       - run: npm test
+      - name: nothing published points at a local path
+        run: node -e "const d=require('./package.json').dependencies??{};const bad=Object.entries(d).filter(([,v])=>/^(file|link|workspace):/.test(v));if(bad.length){console.error('local dependencies:',bad);process.exit(1)}"
   grammar:
     runs-on: ubuntu-latest
     needs: engine
