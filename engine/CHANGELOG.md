@@ -4,7 +4,19 @@ All notable changes to the ArchCode engine. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [SemVer](https://semver.org/) once 1.0 is out — until then every release may change the API.
 
-## [Unreleased] — 0.2.0-preview
+## [0.2.0-preview.1]
+
+### Added
+- `container`, the generic level-2 kind, for a sketch or a Structurizr import: runnable, themed.
+
+### Changed
+- A frame lays out top-down unless it comes out a tower; a card whose arrows all leave vertically slides under its port, so a service–store edge is one straight line.
+- Publishing or subscribing into a topic draws the broker once, whether `via` is on the topic or on the relation line.
+
+### Fixed
+- The `archcode` CLI named the engine by a local path (`file:../engine`) and did not run once installed from npm; it now depends on `@archcode-io/engine` by version, and a release installs it from the registry before it counts as published.
+
+## [0.2.0-preview.0] — 0.2.0-preview
 
 The first public preview. Everything below is new.
 
