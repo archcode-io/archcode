@@ -1,9 +1,13 @@
 name: publish
 # A tag `v0.2.0-preview.3` publishes that version of the engine and then of the CLI to npm
 # (NPM_TOKEN in the repository secrets). Both package.json files carry the tag's version.
+# Everything is tested before anything is published; the token is visible to the two publish
+# steps only, never to an install script or a test; a re-run skips what is already out.
 on:
   push:
     tags: ['v*']
+permissions:
+  contents: read
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -16,36 +20,38 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - name: the tag is the version of both packages
+      - name: the tag is the version of both packages, and nothing points at a local path
         run: |
           for p in engine cli; do
             v="v$(node -p "require('./$p/package.json').version")"
             test "$v" = "${GITHUB_REF_NAME}" || { echo "$p/package.json says $v, the tag is ${GITHUB_REF_NAME}"; exit 1; }
-          done
-      - name: nothing published points at a local path
-        run: |
-          for p in engine cli; do
             node -e "const d=require('./$p/package.json').dependencies??{};const bad=Object.entries(d).filter(([,v])=>/^(file|link|workspace):/.test(v));if(bad.length){console.error('$p has local dependencies:',bad);process.exit(1)}"
           done
-      # a prerelease version (…-preview.N) goes out under the `preview` tag, never as `latest`
-      - name: engine
+          # in preview the CLI names the engine it was tested with, exactly: a caret would accept 0.2.0 and 0.2.1
+          e=$(node -p "require('./cli/package.json').dependencies['@archcode-io/engine']")
+          case "${GITHUB_REF_NAME}" in *-*) test "v$e" = "${GITHUB_REF_NAME}" || { echo "cli depends on engine $e, the tag is ${GITHUB_REF_NAME}"; exit 1; };; esac
+      - name: engine — install and test
         working-directory: engine
-        run: |
-          npm ci
-          npm test
-          npm publish --provenance --access public --tag $(node -p "require('./package.json').version.includes('-') ? 'preview' : 'latest'")
+        run: npm ci --ignore-scripts && npm test
         env:
           EXAMPLES: ${{ github.workspace }}/engine/test/fixtures
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      # the CLI is tested against the engine from this commit, then published naming it by version;
-      # the link is removed first so the tarball holds nothing but bin/, README and LICENSE
-      - name: cli
+      # the CLI is tested against the engine from this commit; the link goes before publishing,
+      # so the tarball holds nothing but bin/, README and LICENSE
+      - name: cli — test against this engine
         working-directory: cli
         run: |
           mkdir -p node_modules/@archcode-io && ln -sfn ../../../engine node_modules/@archcode-io/engine
           npm test
           rm -rf node_modules
-          npm publish --provenance --access public --tag $(node -p "require('./package.json').version.includes('-') ? 'preview' : 'latest'")
+      # a prerelease version (…-preview.N) goes out under the `preview` tag, never as `latest`
+      - name: publish engine, then cli
+        run: |
+          for p in engine cli; do
+            name=$(node -p "require('./$p/package.json').name"); v="${GITHUB_REF_NAME#v}"
+            if npm view "$name@$v" version >/dev/null 2>&1; then echo "$name@$v is already published"; continue; fi
+            tag=$(node -p "'$v'.includes('-') ? 'preview' : 'latest'")
+            (cd "$p" && npm publish --provenance --access public --tag "$tag")
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # a fresh install from the registry must run: the check the 0.2.0-preview.0 CLI would have failed

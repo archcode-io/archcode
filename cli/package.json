@@ -30,7 +30,7 @@
     "test": "node --test \"test/**/*.test.mjs\""
   },
   "dependencies": {
-    "@archcode-io/engine": "^0.2.0-preview.1"
+    "@archcode-io/engine": "0.2.0-preview.1"
   },
   "engines": {
     "node": ">=20"

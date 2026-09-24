@@ -17,7 +17,7 @@ The grammar is generated from the engine's vocabulary (`npm run grammar`).
 Download the `.vsix` from [archcode.io/download/vscode](https://archcode.io/download/vscode), then
 
 ```sh
-code --install-extension archcode-0.2.2.vsix     # or: Extensions view → ⋯ → Install from VSIX…
+code --install-extension archcode-<version>.vsix  # or: Extensions view → ⋯ → Install from VSIX…
 ```
 
 Cursor, Windsurf and VSCodium take the same file (`cursor --install-extension …`).
