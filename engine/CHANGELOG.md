@@ -6,6 +6,9 @@ All notable changes to the ArchCode engine. The format follows
 
 ## [0.2.0-preview.1]
 
+### Security
+- `toSvg` escaped `&`, `<` and `>` but not quotes, and wrote document values (ids, stage, phase, verbs) into quoted attributes: a crafted document — a share link, a file — could close an attribute and add an event handler to the exported SVG. Quotes are escaped now; a test feeds every attribute a `"` and checks the element keeps only its own attributes.
+
 ### Added
 - `container`, the generic level-2 kind, for a sketch or a Structurizr import: runnable, themed.
 

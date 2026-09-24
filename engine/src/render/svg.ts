@@ -3,7 +3,9 @@ import { textWidth } from '../layout/measure.js';
 import { labelBox, roundedPath } from '../layout/label.js';
 import { footerOf, AGENT_ROW } from '../lens.js';
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Text and attribute values alike: the ids, stages and labels come from the document, and a
+// document may arrive in a share link — a `"` left as it is would close the attribute.
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 /**
  * Colours are a theme, not a constant: the same drawing on a dark canvas in the
