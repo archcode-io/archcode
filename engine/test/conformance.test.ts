@@ -15,7 +15,8 @@ const suite = process.env.CONFORMANCE ?? join(here, '..', '..', '..', '..', 'arc
 const engine = join(here, '..', 'src', 'index.js');
 
 test('spec conformance suite', { skip: !existsSync(join(suite, 'run.mjs')) && 'spec/conformance not found' }, () => {
-  const r = spawnSync(process.execPath, [join(suite, 'run.mjs'), '--engine', engine, '--json'], { encoding: 'utf8' });
+  // a timeout: the runner now exits on its own, so a handle left open would hang CI rather than fail it
+  const r = spawnSync(process.execPath, [join(suite, 'run.mjs'), '--engine', engine, '--json'], { encoding: 'utf8', timeout: 120_000 });
   assert.equal(r.status, 0, r.stdout.split('\n').filter(l => /FAIL|problems|expected/.test(l)).join('\n') || r.stderr);
   const out = JSON.parse(r.stdout);
   assert.equal(out.failed, 0);
