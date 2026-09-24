@@ -3,7 +3,7 @@ import { PLACEMENT_KINDS } from './vocab.js';
 
 /**
  * The resources table — the slide every architecture committee asks for
- * (`Ресурсы серверов … Итого`). It is a projection of the placement blocks,
+ * (a sizing sheet with a total per environment). It is a projection of the placement blocks,
  * never a thing written by hand: every `node`, sized `cluster` and sized `run`
  * contributes its figures times its multiplier, per environment, per moment.
  */

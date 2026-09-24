@@ -118,7 +118,11 @@ export async function layoutLayered(g: RenderGraph, opts: LayoutOptions = {}): P
 
   // ---- pull each store under the single service that owns it ----
   const clusterOf = new Map<string, string>();     // storeId -> ownerId
-  {
+  // Top-down, the plain layering already lands a store in the row under its writer; the
+  // invisible owner group only helps left-to-right, and top-down it costs layers: a job that
+  // also writes the store is pushed above the service, a service the owner calls below it.
+  const clusterStores = rootOpts['archcode.cluster'] !== 'false' && !/DOWN|UP/.test(rootOpts['elk.direction'] ?? '');
+  if (clusterStores) {
     const writers = new Map<string, Set<string>>();
     for (const e of g.edges) {
       const to = meta.get(e.to);

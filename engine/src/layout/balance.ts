@@ -65,16 +65,21 @@ async function frameItem(n: RenderNode, edges: RenderEdge[], dir: 'DOWN' | 'RIGH
   return { node: n, id: n.id, kind: n.kind, band: 1, w: frame.w, h: frame.h, sub, members: sub.nodes, x: 0, y: 0 };
 }
 
-/** Whichever of DOWN / RIGHT lands the frame nearer the target aspect (the outer rows add height). */
+/**
+ * Top-down unless the frame comes out a tower. Top-down is how a system is
+ * read — a service above the store it writes, a caller above the callee — and
+ * it keeps every service–store edge one row long. Left-to-right lands the store
+ * three columns away and was chosen only for its aspect; it is kept for the
+ * long pipelines whose top-down picture is more than twice as tall as wide.
+ */
 async function autoDir(n: RenderNode, edges: RenderEdge[], target: number): Promise<'DOWN' | 'RIGHT'> {
-  let best: { dir: 'DOWN' | 'RIGHT'; err: number } | null = null;
-  for (const dir of ['DOWN', 'RIGHT'] as const) {
-    const l = await layoutLayered({ roots: [n], edges }, { root: { 'elk.direction': dir } });
-    const f = l.nodes.find(k => k.id === n.id)!;
-    const err = Math.abs(Math.log2((f.w / f.h) / (target * 1.3)));
-    if (!best || err < best.err) best = { dir, err };
-  }
-  return best!.dir;
+  const down = await layoutLayered({ roots: [n], edges }, { root: { 'elk.direction': 'DOWN' } });
+  const fd = down.nodes.find(k => k.id === n.id)!;
+  if (fd.w / fd.h >= 0.5) return 'DOWN';
+  const right = await layoutLayered({ roots: [n], edges }, { root: { 'elk.direction': 'RIGHT' } });
+  const fr = right.nodes.find(k => k.id === n.id)!;
+  const err = (w: number, h: number) => Math.abs(Math.log2((w / h) / (target * 1.3)));
+  return err(fr.w, fr.h) + 0.5 < err(fd.w, fd.h) ? 'RIGHT' : 'DOWN';
 }
 
 /**
@@ -245,9 +250,39 @@ export async function layoutTwoPhase(g: RenderGraph, opts: BalanceOptions = {}):
   // ---- place ----
   const out: Layout = { nodes: [], edges: [], width: 0, height: 0 };
   const pos = new Map<string, any>(r2.children.map((c: any) => [c.id, c]));
+  for (const it of items) { const c = pos.get(it.id); it.x = c.x; it.y = c.y; }
+
+  // ---- straighten: a card whose every arrow leaves vertically towards one x slides under (or
+  // over) that port, so the line is a line and not a line with a 14px jog in it. ELK places the
+  // card by its centre and the port by the leaf inside the frame; the two rarely coincide.
+  const shifted = new Set<string>();
+  {
+    const portOf = (it: Item, pid: string) => ports.get(it.id)!.find(p => p.id === pid)!;
+    for (const it of items) {
+      if (it.sub) continue;
+      const mine = edges2.filter(e => e.sources[0]!.startsWith(it.id + '::') || e.targets[0]!.startsWith(it.id + '::'));
+      if (!mine.length) continue;
+      let dx: number | null = null, ok = true;
+      for (const e of mine) {
+        const meSrc = e.sources[0]!.startsWith(it.id + '::');
+        const myPid = meSrc ? e.sources[0]! : e.targets[0]!, otherPid = meSrc ? e.targets[0]! : e.sources[0]!;
+        const other = items.find(k => otherPid.startsWith(k.id + '::'))!;
+        const mp = portOf(it, myPid), op = portOf(other, otherPid);
+        const vertical = (q: Side) => q === 'top' || q === 'bottom';
+        if (!vertical(mp.side) || !vertical(op.side)) { ok = false; break; }
+        const d = (other.x + op.x) - (it.x + mp.x);
+        if (dx === null) dx = d; else if (Math.abs(d - dx) > 1) { ok = false; break; }
+      }
+      if (!ok || dx === null || Math.abs(dx) < 1 || Math.abs(dx) > 90) continue;
+      const nx = it.x + dx;
+      const clash = items.some(k => k !== it && k.y < it.y + it.h + 24 && k.y + k.h > it.y - 24 && k.x < nx + it.w + 24 && k.x + k.w > nx - 24);
+      if (clash || nx < 0) continue;
+      it.x = nx; shifted.add(it.id);
+    }
+  }
+
   for (const it of items) {
-    const c = pos.get(it.id);
-    it.x = c.x; it.y = c.y;
+    const c = { x: it.x, y: it.y };
     if (!it.sub) {
       const n = it.node;
       out.nodes.push({ id: n.id, kind: n.kind, label: n.label, tech: n.tech, meta: n.meta, ref: n.ref, phase: n.phase, load: n.load, over: n.over, agents: n.agents, stage: n.stage,
@@ -291,14 +326,22 @@ export async function layoutTwoPhase(g: RenderGraph, opts: BalanceOptions = {}):
     const src = g.edges[+String(e2.id).slice(1)]!;
     const sec = e2.sections?.[0];
     if (!sec) continue;
-    const pts: Pt[] = [sec.startPoint, ...(sec.bendPoints ?? []), sec.endPoint];
+    let pts: Pt[] = [sec.startPoint, ...(sec.bendPoints ?? []), sec.endPoint];
     const A = itemOf.get(src.from)!, B = itemOf.get(src.to)!;
+    let straightened = false;
+    if (shifted.has(A.id) || shifted.has(B.id)) {
+      // the card moved under its port: the top-level leg is now one vertical line
+      const pa = ports.get(A.id)!.find(p => p.id === e2.sources[0])!, pb = ports.get(B.id)!.find(p => p.id === e2.targets[0])!;
+      const p0 = { x: A.x + pa.x, y: A.y + pa.y }, p1 = { x: B.x + pb.x, y: B.y + pb.y };
+      pts = Math.abs(p0.x - p1.x) < 1 ? [p0, { x: p0.x, y: p1.y }] : [p0, { x: p0.x, y: (p0.y + p1.y) / 2 }, { x: p1.x, y: (p0.y + p1.y) / 2 }, p1];
+      straightened = true;
+    }
     const head = A.sub ? leg(A, src.from, pts[0]!).reverse() : [pts[0]!];
     const tail = B.sub ? leg(B, src.to, pts[pts.length - 1]!) : [pts[pts.length - 1]!];
     const lbl = e2.labels?.[0];
     const edge: RoutedEdge = { from: src.from, to: src.to, label: src.label, verb: src.verb, derived: src.derived, dashed: src.dashed,
       points: simplify([...head.slice(0, -1), ...pts, ...tail.slice(1)]),
-      labelPos: lbl && lbl.x !== undefined ? { x: lbl.x, y: lbl.y } : undefined };
+      labelPos: lbl && lbl.x !== undefined && !straightened ? { x: lbl.x, y: lbl.y } : undefined };
     out.edges.push(edge);
   }
   // an edge the top pass could not route (should not happen) still gets a line

@@ -22,7 +22,7 @@ import { ATTR_KEYS, IFACE_VERBS, OBJECT_KINDS, PLACEMENT_KINDS, RESERVED_KINDS, 
 
 export const LANGUAGE_VERSIONS = new Set(['0.1', '0.2']);
 
-const RUNNABLE = new Set(['service', 'webapp', 'app', 'gateway', 'broker', 'datastore', 'cache', 'function', 'job', 'component']);
+const RUNNABLE = new Set(['container', 'service', 'webapp', 'app', 'gateway', 'broker', 'datastore', 'cache', 'function', 'job', 'component']);
 const isMoment = (v: string) => /^(\d{4}(-\d{2}){0,2}|\+\d+[dwmy])$/.test(v);
 
 /** Every full id a reference could mean, from where it is written. */

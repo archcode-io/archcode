@@ -222,6 +222,7 @@ export function applyLens(m: Model, opt: Lens | LensOptions): RenderGraph {
   };
 
   for (const r of rels) {
+    if (topics.has(r.toId)) continue;   // publish/subscribe into a topic: derived below, broker included
     const viaIds = (r.via ?? []).map(v => resolve(v, scopeOf(r.from, m), m));
     const drawn = viaIds.filter(v => expanded.has(v));
     const folded = viaIds.filter(v => !expanded.has(v));
@@ -258,7 +259,9 @@ export function applyLens(m: Model, opt: Lens | LensOptions): RenderGraph {
     for (const p of t.attrs['publisher'] ?? []) pubs.add(resolve(p, t.parent, m));
     for (const s of t.attrs['subscriber'] ?? []) subs.add(resolve(s, t.parent, m));
     const name = t.localId;
+    // the broker: `topic x { via kafka }`, or `via kafka` on the publish/subscribe lines themselves
     const brokers = (t.attrs['via'] ?? []).map(v => resolve(v, t.parent, m));
+    for (const r of rels) if (r.toId === tid) for (const v of r.via ?? []) brokers.push(resolve(v, scopeOf(r.from, m), m));
 
     const liveBroker = brokers.find(b => expanded.has(b));
     if (liveBroker) {

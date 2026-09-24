@@ -51,7 +51,7 @@
       }
     },
     "declaration": {
-      "match": "(?:^|(?<=\\{))\\s*(datastore|component|external|function|contract|decision|service|gateway|cluster|managed|segment|profile|system|webapp|broker|actor|cache|topic|board|arch|node|rule|view|app|job|env|cluster|managed|segment|node|env|view|decision|profile|board|rule)\\s+([A-Za-z_][\\w.\\-]*)",
+      "match": "(?:^|(?<=\\{))\\s*(container|datastore|component|external|function|contract|decision|service|gateway|cluster|managed|segment|profile|system|webapp|broker|actor|cache|topic|board|arch|node|rule|view|app|job|env|cluster|managed|segment|node|env|view|decision|profile|board|rule)\\s+([A-Za-z_][\\w.\\-]*)",
       "captures": {
         "1": {
           "name": "storage.type.kind.archcode"

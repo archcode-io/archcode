@@ -18,7 +18,7 @@ test('the two-phase layout keeps every reference architecture near the screen as
     assert.ok(l.nodes.every(n => [n.x, n.y, n.w, n.h].every(Number.isFinite)), `${f}: finite positions`);
     const w = Math.max(...l.nodes.map(n => n.x + n.w)) - Math.min(...l.nodes.map(n => n.x));
     const h = Math.max(...l.nodes.map(n => n.y + n.h)) - Math.min(...l.nodes.map(n => n.y));
-    assert.ok(w / h > 1.0 && w / h < 3.0, `${f}: aspect ${(w / h).toFixed(2)} should sit between 1 and 3`);
+    assert.ok(w / h > 0.5 && w / h < 3.0, `${f}: aspect ${(w / h).toFixed(2)} should sit between 0.5 and 3`);
     assert.equal(l.edges.length, g.edges.length, `${f}: every edge routed`);
     for (const e of l.edges) {
       const a = byId.get(e.from)!, b = byId.get(e.to)!;

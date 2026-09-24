@@ -3,8 +3,8 @@
 export const OBJECT_KINDS = new Set([
   // L1 context
   'system', 'external', 'actor',
-  // L2 container
-  'service', 'webapp', 'app', 'gateway', 'broker', 'datastore', 'cache', 'function', 'job',
+  // L2 container — `container` is the generic one, for a sketch or a Structurizr import (D-368)
+  'container', 'service', 'webapp', 'app', 'gateway', 'broker', 'datastore', 'cache', 'function', 'job',
   // L3 component
   'component',
   // channels and contracts — first class since D-126 / D-129
