@@ -30,11 +30,17 @@ jobs:
           # in preview the CLI names the engine it was tested with, exactly: a caret would accept 0.2.0 and 0.2.1
           e=$(node -p "require('./cli/package.json').dependencies['@archcode-io/engine']")
           case "${GITHUB_REF_NAME}" in *-*) test "v$e" = "${GITHUB_REF_NAME}" || { echo "cli depends on engine $e, the tag is ${GITHUB_REF_NAME}"; exit 1; };; esac
+      # the spec's conformance suite runs before a release too; without the checkout it would skip
+      - uses: actions/checkout@v4
+        with:
+          repository: archcode-io/archcode-spec
+          path: archcode-spec
       - name: engine — install and test
         working-directory: engine
         run: npm ci --ignore-scripts && npm test
         env:
           EXAMPLES: ${{ github.workspace }}/engine/test/fixtures
+          CONFORMANCE: ${{ github.workspace }}/archcode-spec/conformance
       # the CLI is tested against the engine from this commit; the link goes before publishing,
       # so the tarball holds nothing but bin/, README and LICENSE
       - name: cli — test against this engine
