@@ -39,7 +39,8 @@ jobs:
         working-directory: engine
         run: npm ci --ignore-scripts && npm test
         env:
-          EXAMPLES: ${{ github.workspace }}/engine/test/fixtures
+          # the reference architectures, not the parser's edge-case fixtures (an empty file has no aspect)
+          EXAMPLES: ${{ github.workspace }}/archcode-spec/examples
           CONFORMANCE: ${{ github.workspace }}/archcode-spec/conformance
       # the CLI is tested against the engine from this commit; the link goes before publishing,
       # so the tarball holds nothing but bin/, README and LICENSE

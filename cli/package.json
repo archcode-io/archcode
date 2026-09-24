@@ -1,6 +1,6 @@
 {
   "name": "archcode",
-  "version": "0.2.0-preview.1",
+  "version": "0.2.0-preview.2",
   "description": "ArchCode command line: render an .arch file to SVG, check it, build the compiled form.",
   "license": "Apache-2.0",
   "author": "Baryshev Labs",
@@ -30,7 +30,7 @@
     "test": "node --test \"test/**/*.test.mjs\""
   },
   "dependencies": {
-    "@archcode-io/engine": "0.2.0-preview.1"
+    "@archcode-io/engine": "0.2.0-preview.2"
   },
   "engines": {
     "node": ">=20"

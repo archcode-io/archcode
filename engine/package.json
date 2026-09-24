@@ -1,6 +1,6 @@
 {
   "name": "@archcode-io/engine",
-  "version": "0.2.0-preview.1",
+  "version": "0.2.0-preview.2",
   "description": "ArchCode — an open notation for software architecture. The reference engine: parser with byte-exact round trip, model, semantic checks, lenses, layout and SVG.",
   "license": "Apache-2.0",
   "author": "Baryshev Labs",
