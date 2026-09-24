@@ -65,6 +65,9 @@ jobs:
       - name: the published CLI installs and runs
         run: |
           v="${GITHUB_REF_NAME#v}"
-          for i in 1 2 3 4 5 6; do npm view "archcode@$v" version >/dev/null 2>&1 && break; sleep 10; done
-          cd "$(mktemp -d)" && npm init -y >/dev/null && npm i "archcode@$v"
+          # the registry's CDN lags a publish by a minute or two, the engine's metadata included:
+          # retry the install itself, fresh from the registry each time, for up to five minutes
+          cd "$(mktemp -d)" && npm init -y >/dev/null
+          for i in $(seq 1 20); do npm i --prefer-online "archcode@$v" && break; echo "not visible yet ($i)"; sleep 15; done
+          npm ls @archcode-io/engine | grep -q "@archcode-io/engine@$v"
           printf 'service a "A"\nservice b "B"\na calls b\n' | npx archcode render - > out.svg && grep -q '<svg' out.svg
